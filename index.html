@@ -1,0 +1,2773 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نادي مواهب الإعلام والثقافة - TMCC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+        
+        * {
+            font-family: 'Amiri', serif;
+        }
+        
+        :root {
+            --primary: #17827D;
+            --secondary: #8CBFBD;
+            --light: #F0FBFB;
+            --accent1: #228AA0;
+            --accent2: #3EA7DF;
+            --dark: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+        
+        .bg-primary { background-color: var(--primary); }
+        .bg-secondary { background-color: var(--secondary); }
+        .bg-light { background-color: var(--light); }
+        .bg-accent1 { background-color: var(--accent1); }
+        .bg-accent2 { background-color: var(--accent2); }
+        .bg-dark { background-color: var(--dark); }
+        
+        .text-primary { color: var(--primary); }
+        .text-secondary { color: var(--secondary); }
+        .text-accent1 { color: var(--accent1); }
+        .text-accent2 { color: var(--accent2); }
+        
+        /* Glass morphism effects */
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tech-card {
+            background: linear-gradient(135deg, rgba(23, 130, 125, 0.1), rgba(62, 167, 223, 0.1));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(62, 167, 223, 0.3);
+        }
+        
+        .tech-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--accent2));
+        }
+        
+        .slide-container {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        .slide.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .sidebar {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        
+        .sidebar.open {
+            transform: translateX(0);
+        }
+        
+        .modal {
+            display: none;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .president-slide {
+            display: none;
+            animation: slideIn 0.6s ease-in-out;
+        }
+        
+        .president-slide.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0; 
+                transform: translateX(30px) scale(0.95); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateX(0) scale(1); 
+            }
+        }
+        
+        .president-indicator {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .president-indicator:hover {
+            transform: scale(1.2);
+        }
+        
+        .member-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .member-batch {
+            display: none;
+        }
+        
+        .member-batch.active {
+            display: contents;
+        }
+        
+        .heart-btn {
+            transition: all 0.2s ease;
+        }
+        
+        .heart-btn.liked {
+            color: #ef4444;
+            transform: scale(1.1);
+        }
+        
+        @media (max-width: 768px) {
+            .member-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Header -->
+    <header class="tech-gradient text-white shadow-2xl sticky top-0 z-50 glass">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-8">
+                <button onclick="toggleSidebar()" class="text-2xl hover:scale-110 transition-transform duration-300">
+                    <i class="fas fa-grip-lines-vertical"></i>
+                </button>
+                
+                <!-- Login/Profile Section -->
+                <div id="authSection">
+                    <button id="loginBtn" onclick="openLoginModal()" class="glass hover:neon-glow px-6 py-3 rounded-xl transition-all duration-300 border border-white border-opacity-20">
+                        <i class="fas fa-sign-in-alt mr-2"></i>
+                        تسجيل الدخول
+                    </button>
+                    
+                    <div id="profileSection" class="hidden relative">
+                        <button onclick="toggleProfileMenu()" class="glass hover:neon-glow p-2 rounded-full transition-all duration-300 border border-white border-opacity-20">
+                            <div id="profileImage" class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center overflow-hidden">
+                                <i class="fas fa-user text-white"></i>
+                            </div>
+                        </button>
+                        
+                        <!-- Profile Dropdown -->
+                        <div id="profileMenu" class="hidden absolute top-full right-0 mt-2 w-80 tech-card rounded-xl shadow-2xl border border-white border-opacity-20 z-50">
+                            <div class="p-6 border-b border-white border-opacity-10">
+                                <div class="flex items-center gap-4 mb-4">
+                                    <div class="relative">
+                                        <div id="profileImageLarge" class="w-16 h-16 bg-gradient-to-br from-accent2 to-primary rounded-full flex items-center justify-center overflow-hidden border-2 border-white border-opacity-30">
+                                            <i class="fas fa-user text-white text-xl"></i>
+                                        </div>
+                                        <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
+                                            <div class="w-2 h-2 bg-white rounded-full"></div>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p id="userNameLarge" class="font-bold text-white text-lg">اسم المستخدم</p>
+                                        <p id="userEmail" class="text-sm text-gray-300 mb-1">user@example.com</p>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                                            <span class="text-xs text-green-300">متصل الآن</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="openProfileEditor()" class="w-full bg-gradient-to-r from-accent2 to-accent1 hover:from-accent1 hover:to-primary text-white py-3 rounded-lg text-sm font-medium transition-all duration-300 transform hover:scale-105">
+                                    <i class="fas fa-edit mr-2"></i>
+                                    تعديل الملف الشخصي
+                                </button>
+                            </div>
+                            <div class="p-3">
+                                <button onclick="viewMyCreations()" class="w-full text-right px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-primary hover:to-accent2 hover:bg-opacity-20 rounded-lg transition-all duration-300 group">
+                                    <div class="flex items-center justify-between">
+                                        <span class="flex items-center gap-3">
+                                            <i class="fas fa-palette text-accent2 group-hover:text-white transition-colors"></i>
+                                            إبداعاتي
+                                        </span>
+                                        <i class="fas fa-arrow-left text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                                    </div>
+                                </button>
+                                <button onclick="viewMyActivity()" class="w-full text-right px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-primary hover:to-accent2 hover:bg-opacity-20 rounded-lg transition-all duration-300 group">
+                                    <div class="flex items-center justify-between">
+                                        <span class="flex items-center gap-3">
+                                            <i class="fas fa-chart-line text-accent2 group-hover:text-white transition-colors"></i>
+                                            نشاطي
+                                        </span>
+                                        <i class="fas fa-arrow-left text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                                    </div>
+                                </button>
+                                <button onclick="accountSettings()" class="w-full text-right px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-primary hover:to-accent2 hover:bg-opacity-20 rounded-lg transition-all duration-300 group">
+                                    <div class="flex items-center justify-between">
+                                        <span class="flex items-center gap-3">
+                                            <i class="fas fa-cog text-accent2 group-hover:text-white transition-colors"></i>
+                                            إعدادات الحساب
+                                        </span>
+                                        <i class="fas fa-arrow-left text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                                    </div>
+                                </button>
+                                <hr class="border-white border-opacity-10 my-3">
+                                <button onclick="logout()" class="w-full text-right px-4 py-3 text-red-400 hover:text-white hover:bg-gradient-to-r hover:from-red-500 hover:to-red-600 hover:bg-opacity-20 rounded-lg transition-all duration-300 group">
+                                    <div class="flex items-center justify-between">
+                                        <span class="flex items-center gap-3">
+                                            <i class="fas fa-sign-out-alt text-red-400 group-hover:text-white transition-colors"></i>
+                                            تسجيل الخروج
+                                        </span>
+                                        <i class="fas fa-arrow-left text-xs opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-8">
+                <div class="text-center">
+                    <h1 class="text-3xl font-bold tracking-wider">TMCC</h1>
+                    <p class="text-xs opacity-80">نادي مواهب الإعلام والثقافة</p>
+                </div>
+                <div class="w-14 h-14 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm border border-white border-opacity-30">
+                    <i class="fas fa-broadcast-tower text-white text-xl"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar fixed top-0 right-0 h-full w-80 bg-dark shadow-2xl z-40 tech-card overflow-y-auto">
+        <div class="sticky top-0 bg-dark p-6 border-b border-white border-opacity-10">
+            <div class="flex justify-between items-center">
+                <h2 class="text-xl font-bold text-white">القائمة الرئيسية</h2>
+                <button onclick="toggleSidebar()" class="text-2xl text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        
+        <nav class="p-6 space-y-2">
+            <a href="#home" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-home text-sm"></i>
+                </div>
+                <span class="font-medium">الصفحة الرئيسية</span>
+            </a>
+            <a href="#activities" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-images text-sm"></i>
+                </div>
+                <span class="font-medium">معرض الصور</span>
+            </a>
+            <a href="#about" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-users text-sm"></i>
+                </div>
+                <span class="font-medium">من نحن</span>
+            </a>
+            <a href="#creations" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-palette text-sm"></i>
+                </div>
+                <span class="font-medium">إبداعات الأعضاء</span>
+            </a>
+            <a href="#courses" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-graduation-cap text-sm"></i>
+                </div>
+                <span class="font-medium">الدورات والورشات</span>
+            </a>
+            <a href="#join" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-user-plus text-sm"></i>
+                </div>
+                <span class="font-medium">انضم إلينا</span>
+            </a>
+            <a href="#news" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-newspaper text-sm"></i>
+                </div>
+                <span class="font-medium">الأخبار والتحديثات</span>
+            </a>
+            <a href="#contact" class="flex items-center gap-4 py-3 px-4 rounded-xl hover:bg-primary hover:text-white transition-all duration-300 text-gray-300 hover:neon-glow group">
+                <div class="w-10 h-10 flex items-center justify-center rounded-lg bg-white bg-opacity-10 group-hover:bg-white group-hover:bg-opacity-20 transition-all duration-300">
+                    <i class="fas fa-envelope text-sm"></i>
+                </div>
+                <span class="font-medium">اتصل بنا</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-md w-full mx-4 border border-white border-opacity-20">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-sign-in-alt text-accent2"></i>
+                    تسجيل الدخول
+                </h3>
+                <button onclick="closeLoginModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="space-y-6" onsubmit="handleLogin(event)">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">البريد الإلكتروني *</label>
+                    <input id="loginEmail" type="email" required placeholder="أدخل بريدك الإلكتروني" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">كلمة المرور *</label>
+                    <input id="loginPassword" type="password" required placeholder="أدخل كلمة المرور" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                </div>
+
+                <button type="submit" class="w-full tech-gradient hover:neon-glow text-white py-3 rounded-xl transition-all duration-300 font-bold">
+                    <i class="fas fa-sign-in-alt ml-2"></i>
+                    تسجيل الدخول
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Join Form Modal -->
+    <div id="joinFormModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-2xl w-full mx-4 border border-white border-opacity-20 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-user-plus text-accent2"></i>
+                    استمارة الانضمام للنادي
+                </h3>
+                <button onclick="closeJoinForm()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="space-y-6" onsubmit="submitJoinForm(event)">
+                <!-- Personal Information -->
+                <div class="bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+                    <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-user text-accent2"></i>
+                        المعلومات الشخصية
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">الاسم الأول *</label>
+                            <input id="joinFirstName" type="text" required placeholder="أدخل اسمك الأول" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">اللقب *</label>
+                            <input id="joinLastName" type="text" required placeholder="أدخل لقبك" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">رقم الهاتف *</label>
+                            <input id="joinPhone" type="tel" required placeholder="+213 555 123 456" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">البريد الإلكتروني *</label>
+                            <input id="joinEmail" type="email" required placeholder="example@email.com" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Academic Information -->
+                <div class="bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+                    <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-graduation-cap text-accent2"></i>
+                        المعلومات الأكاديمية
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">الكلية *</label>
+                            <select id="joinFaculty" required class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white backdrop-blur-sm">
+                                <option value="">اختر الكلية</option>
+                                <option value="علوم الإعلام والاتصال">علوم الإعلام والاتصال</option>
+                                <option value="الآداب واللغات">الآداب واللغات</option>
+                                <option value="العلوم الإنسانية والاجتماعية">العلوم الإنسانية والاجتماعية</option>
+                                <option value="العلوم الاقتصادية والتجارية">العلوم الاقتصادية والتجارية</option>
+                                <option value="الحقوق والعلوم السياسية">الحقوق والعلوم السياسية</option>
+                                <option value="العلوم الطبيعية والحياة">العلوم الطبيعية والحياة</option>
+                                <option value="العلوم الدقيقة والإعلام الآلي">العلوم الدقيقة والإعلام الآلي</option>
+                                <option value="الطب">الطب</option>
+                                <option value="الهندسة">الهندسة</option>
+                                <option value="أخرى">أخرى</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">التخصص</label>
+                            <input id="joinSpecialization" type="text" placeholder="أدخل تخصصك الدقيق" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">المستوى الدراسي *</label>
+                            <select id="joinLevel" required class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white backdrop-blur-sm">
+                                <option value="">اختر المستوى</option>
+                                <option value="السنة الأولى ليسانس">السنة الأولى ليسانس</option>
+                                <option value="السنة الثانية ليسانس">السنة الثانية ليسانس</option>
+                                <option value="السنة الثالثة ليسانس">السنة الثالثة ليسانس</option>
+                                <option value="السنة الأولى ماستر">السنة الأولى ماستر</option>
+                                <option value="السنة الثانية ماستر">السنة الثانية ماستر</option>
+                                <option value="دكتوراه">دكتوراه</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">رقم التسجيل الجامعي</label>
+                            <input id="joinStudentId" type="text" placeholder="رقم التسجيل (اختياري)" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interests and Skills -->
+                <div class="bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+                    <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-palette text-accent2"></i>
+                        الاهتمامات والمهارات
+                    </h4>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-3">المجالات التي تهتم بها *</label>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="التصوير" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">التصوير</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="الكتابة" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">الكتابة</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="الإذاعة" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">الإذاعة</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="المونتاج" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">المونتاج</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="التصميم" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">التصميم</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="الإخراج" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">الإخراج</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="الصحافة" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">الصحافة</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="المسرح" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">المسرح</span>
+                            </label>
+                            <label class="flex items-center gap-2 text-gray-300 cursor-pointer">
+                                <input type="checkbox" name="interests" value="الموسيقى" class="rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                                <span class="text-sm">الموسيقى</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-3">خبراتك السابقة</label>
+                        <textarea id="joinExperience" rows="3" placeholder="اذكر أي خبرات أو مشاريع سابقة في مجال الإعلام والثقافة..." class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm resize-none"></textarea>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-sm font-medium text-gray-300 mb-3">لماذا تريد الانضمام للنادي؟ *</label>
+                        <textarea id="joinMotivation" rows="3" required placeholder="اكتب دوافعك للانضمام وما تتوقع تحقيقه..." class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm resize-none"></textarea>
+                    </div>
+                </div>
+
+                <!-- Agreement -->
+                <div class="bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+                    <label class="flex items-start gap-3 text-gray-300 cursor-pointer">
+                        <input type="checkbox" id="joinAgreement" required class="mt-1 rounded bg-white bg-opacity-10 border-white border-opacity-20 text-accent2 focus:ring-accent2">
+                        <span class="text-sm leading-relaxed">
+                            أوافق على الانضمام لنادي مواهب الإعلام والثقافة والالتزام بقوانينه ولوائحه، والمشاركة الفعالة في الأنشطة والفعاليات، واحترام جميع الأعضاء والمسؤولين في النادي.
+                        </span>
+                    </label>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 tech-gradient hover:neon-glow text-white py-4 rounded-xl transition-all duration-300 font-bold text-lg">
+                        <i class="fas fa-paper-plane ml-2"></i>
+                        إرسال طلب الانضمام
+                    </button>
+                    <button type="button" onclick="closeJoinForm()" class="px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-colors">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Information Form Modal -->
+    <div id="userInfoModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-2xl w-full mx-4 border border-white border-opacity-20 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-user-edit text-accent2"></i>
+                    إكمال المعلومات الشخصية
+                </h3>
+                <button onclick="closeUserInfoModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="space-y-6" onsubmit="handleUserInfoSubmit(event)">
+                <!-- Profile Image Upload -->
+                <div class="text-center">
+                    <div class="relative inline-block">
+                        <div id="userInfoProfileImage" class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center overflow-hidden mx-auto mb-4 cursor-pointer" onclick="selectUserInfoImage()">
+                            <i class="fas fa-user text-white text-3xl"></i>
+                        </div>
+                        <button type="button" onclick="selectUserInfoImage()" class="absolute bottom-0 right-0 bg-accent2 hover:bg-accent1 text-white p-2 rounded-full transition-colors">
+                            <i class="fas fa-camera text-sm"></i>
+                        </button>
+                        <input type="file" id="userInfoImageInput" accept="image/*" class="hidden" onchange="handleUserInfoImageUpload(event)">
+                    </div>
+                    <p class="text-gray-300 text-sm">انقر لإضافة صورة شخصية</p>
+                </div>
+
+                <!-- Personal Information -->
+                <div class="bg-white bg-opacity-5 rounded-xl p-6 border border-white border-opacity-10">
+                    <h4 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <i class="fas fa-user text-accent2"></i>
+                        المعلومات الشخصية
+                    </h4>
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">الاسم الكامل *</label>
+                            <input id="userInfoFullName" type="text" required placeholder="أدخل اسمك الكامل" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">رقم الهاتف *</label>
+                            <input id="userInfoPhone" type="tel" required placeholder="+213 555 123 456" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">البريد الإلكتروني</label>
+                            <input id="userInfoEmail" type="email" readonly class="w-full px-4 py-3 bg-gray-600 bg-opacity-50 border border-white border-opacity-20 rounded-xl text-gray-300 backdrop-blur-sm cursor-not-allowed">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">الصفة *</label>
+                            <select id="userInfoUserType" required class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white backdrop-blur-sm">
+                                <option value="">اختر الصفة</option>
+                                <option value="student">طالب جامعي</option>
+                                <option value="doctor">دكتور</option>
+                                <option value="visitor">زائر</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-3">ما هو شغفك في مجال الإعلام؟ *</label>
+                            <textarea id="userInfoPassion" rows="3" required placeholder="اكتب عن شغفك واهتمامك في مجال الإعلام..." class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm resize-none"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 tech-gradient hover:neon-glow text-white py-4 rounded-xl transition-all duration-300 font-bold text-lg">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ المعلومات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Profile Editor Modal -->
+    <div id="profileEditorModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-lg w-full mx-4 border border-white border-opacity-20 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-user-edit text-accent2"></i>
+                    تعديل الملف الشخصي
+                </h3>
+                <button onclick="closeProfileEditor()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form class="space-y-6" onsubmit="saveProfile(event)">
+                <!-- Profile Image Section -->
+                <div class="text-center">
+                    <div class="relative inline-block">
+                        <div id="editProfileImage" class="w-24 h-24 bg-white bg-opacity-20 rounded-full flex items-center justify-center overflow-hidden mx-auto mb-4">
+                            <i class="fas fa-user text-white text-3xl"></i>
+                        </div>
+                        <button type="button" onclick="selectProfileImage()" class="absolute bottom-0 right-0 bg-accent2 hover:bg-accent1 text-white p-2 rounded-full transition-colors">
+                            <i class="fas fa-camera text-sm"></i>
+                        </button>
+                        <input type="file" id="profileImageInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                    </div>
+                    <p class="text-gray-300 text-sm">انقر على الكاميرا لتغيير الصورة</p>
+                </div>
+
+                <!-- Personal Information -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">الاسم الكامل</label>
+                    <input id="editFirstName" type="text" required placeholder="الاسم الكامل" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">البريد الإلكتروني</label>
+                    <input id="editEmail" type="email" required placeholder="البريد الإلكتروني" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">الصفة</label>
+                    <select id="editSpecialty" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white backdrop-blur-sm">
+                        <option value="">اختر الصفة</option>
+                        <option value="student">طالب جامعي</option>
+                        <option value="doctor">دكتور</option>
+                        <option value="visitor">زائر</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">شغفك في مجال الإعلام</label>
+                    <textarea id="editBio" rows="4" placeholder="اكتب عن شغفك واهتمامك في مجال الإعلام..." class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">رقم الهاتف</label>
+                    <input id="editPhone" type="tel" placeholder="رقم الهاتف" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 tech-gradient hover:neon-glow text-white py-3 rounded-xl transition-all duration-300 font-bold">
+                        <i class="fas fa-save ml-2"></i>
+                        حفظ التغييرات
+                    </button>
+                    <button type="button" onclick="closeProfileEditor()" class="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-colors">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Home Section -->
+        <section id="home" class="mb-20">
+            <div class="text-center mb-16 relative">
+                <div class="absolute inset-0 bg-gradient-to-r from-primary to-accent2 opacity-5 rounded-3xl"></div>
+                <div class="relative z-10 py-16">
+                    <h1 class="text-5xl font-bold text-primary mb-8 tracking-wide">نادي مواهب الإعلام والثقافة</h1>
+                    <div class="w-24 h-1 bg-gradient-to-r from-primary to-accent2 mx-auto mb-8"></div>
+                    <p class="text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed font-medium">
+                        منصة إبداعية تقنية متطورة تهدف إلى تنمية المواهب الشابة في مجالات الإعلام والثقافة والفنون الرقمية. 
+                        نسعى لتوفير بيئة محفزة للإبداع والتطوير المهني من خلال التقنيات الحديثة والأنشطة التفاعلية المتنوعة.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Presidents Section -->
+            <div class="mb-16">
+                <h2 class="text-3xl font-bold text-center text-primary mb-12 flex items-center justify-center gap-3">
+                    <i class="fas fa-crown text-accent2"></i>
+                    رؤساء النادي عبر التاريخ
+                </h2>
+                
+                <div class="relative max-w-md mx-auto">
+                    <div id="presidentsSlider" class="overflow-hidden rounded-3xl">
+                        <!-- President 1 - إدريس رحماني -->
+                        <div class="president-slide active tech-card p-12 text-center shadow-2xl neon-glow">
+                            <div class="w-32 h-32 bg-gradient-to-br from-secondary to-accent1 rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">إدريس رحماني</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-primary bg-opacity-20 px-4 py-2 rounded-full inline-block">الرئيس المؤسس</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">العملاق الذي أسس النادي وسط ظروف صعبة بإمكانات شبه معدومة، ولكن بإرادة كانت أكبر من كل التحديات. وضع أول لبنة في صرح إعلامي طلابي ما زال قائماً حتى اليوم.</p>
+                        </div>
+                        
+                        <!-- President 2 - وليد شكيكن -->
+                        <div class="president-slide tech-card p-12 text-center shadow-2xl">
+                            <div class="w-32 h-32 bg-gradient-to-br from-accent1 to-accent2 rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">وليد شكيكن</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-accent1 bg-opacity-20 px-4 py-2 rounded-full inline-block">الرئيس الثاني</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">الشخصية الديناميكية التي استلمت المشعل من إدريس وأكملت المسير بخطى واثقة. أعاد تشكيل الفريق وجلب أفكاراً جديدة، وساهم في ترسيخ ثقافة العمل الإعلامي داخل الجامعة.</p>
+                        </div>
+                        
+                        <!-- President 3 - محمد والي -->
+                        <div class="president-slide tech-card p-12 text-center shadow-2xl">
+                            <div class="w-32 h-32 bg-gradient-to-br from-accent2 to-primary rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-mountain"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">محمد والي</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-accent2 bg-opacity-20 px-4 py-2 rounded-full inline-block">الرئيس الثالث</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">العامل الهادئ الذي لا يبحث عن الأضواء، بل عن الأثر. حافظ على جوهر النادي وعزّز أركانه، رسّخ وجود النادي في المشهد الطلابي ومنح الأعضاء شعوراً بالانتماء والاستقرار.</p>
+                        </div>
+                        
+                        <!-- President 4 - كنزة بن عثمان -->
+                        <div class="president-slide tech-card p-12 text-center shadow-2xl">
+                            <div class="w-32 h-32 bg-gradient-to-br from-primary to-secondary rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-phoenix-rising"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">كنزة بن عثمان</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-secondary bg-opacity-20 px-4 py-2 rounded-full inline-block">رئيسة الإحياء</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">تسلمت النادي في لحظة اختناق بعد جائحة كورونا. أعادت له الحياة والضوء، وأطلقت المبادرات الإعلامية من جديد. عادت الميكروفونات للعمل والكاميرات لتوثق والأقلام لتكتب.</p>
+                        </div>
+                        
+                        <!-- President 5 - وفاء شماني -->
+                        <div class="president-slide tech-card p-12 text-center shadow-2xl">
+                            <div class="w-32 h-32 bg-gradient-to-br from-accent1 to-primary rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-bridge"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">وفاء شماني</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-accent1 bg-opacity-20 px-4 py-2 rounded-full inline-block">النقطة البيضاء</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">النقطة البيضاء والمفصلية لمعرفة طريق وسيرورة النادي في المستقبل. عرفت كيف تربط بين الجيل القديم والجيل الجديد، فجمعت بين احترام التقاليد الإعلامية وفتح الآفاق أمام مواهب جديدة.</p>
+                        </div>
+                        
+                        <!-- President 6 - وفاء حمداد -->
+                        <div class="president-slide tech-card p-12 text-center shadow-2xl">
+                            <div class="w-32 h-32 bg-gradient-to-br from-accent2 to-secondary rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">وفاء حمداد</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-accent2 bg-opacity-20 px-4 py-2 rounded-full inline-block">الأسطورة الإعلامية</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">قادت النادي في أصعب المراحل تحت ضغوط تنظيمية وإرهاق طلابي وتحديات داخلية وخارجية. ومع ذلك لم تنكسر. حملت المشعل الأخير وأبقت اللهب مشتعلاً رغم كل الرياح.</p>
+                        </div>
+                        
+                        <!-- President 7 - محمد أمين حمدان -->
+                        <div class="president-slide tech-card p-12 text-center shadow-2xl">
+                            <div class="w-32 h-32 bg-gradient-to-br from-secondary to-accent1 rounded-3xl mx-auto mb-8 flex items-center justify-center text-white text-4xl shadow-lg">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h3 class="font-bold text-white text-2xl mb-3">محمد أمين حمدان</h3>
+                            <p class="text-accent2 text-lg mb-4 bg-primary bg-opacity-20 px-4 py-2 rounded-full inline-block">الرئيس الحالي</p>
+                            <p class="text-gray-300 text-sm leading-relaxed">الرئيس الحالي للنادي، يحمل على عاتقه مسؤولية استكمال المسيرة الإعلامية المتميزة. نتمنى له التوفيق في قيادة النادي نحو آفاق جديدة من الإبداع والتميز.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation -->
+                    <div class="flex justify-center items-center gap-6 mt-8">
+                        <button onclick="prevPresident()" class="glass hover:neon-glow p-4 rounded-full transition-all duration-300 hover:scale-110">
+                            <i class="fas fa-chevron-right text-white text-lg"></i>
+                        </button>
+                        <div class="flex gap-3">
+                            <div class="w-4 h-4 bg-accent2 rounded-full president-indicator active" data-president="0"></div>
+                            <div class="w-4 h-4 bg-gray-400 rounded-full president-indicator" data-president="1"></div>
+                            <div class="w-4 h-4 bg-gray-400 rounded-full president-indicator" data-president="2"></div>
+                            <div class="w-4 h-4 bg-gray-400 rounded-full president-indicator" data-president="3"></div>
+                            <div class="w-4 h-4 bg-gray-400 rounded-full president-indicator" data-president="4"></div>
+                            <div class="w-4 h-4 bg-gray-400 rounded-full president-indicator" data-president="5"></div>
+                            <div class="w-4 h-4 bg-gray-400 rounded-full president-indicator" data-president="6"></div>
+                        </div>
+                        <button onclick="nextPresident()" class="glass hover:neon-glow p-4 rounded-full transition-all duration-300 hover:scale-110">
+                            <i class="fas fa-chevron-left text-white text-lg"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Photo Gallery Section -->
+        <section id="activities" class="mb-20">
+            <h2 class="text-4xl font-bold text-center text-primary mb-12 flex items-center justify-center gap-4">
+                <i class="fas fa-camera-retro text-accent2"></i>
+                معرض الصور
+            </h2>
+            
+            <div class="tech-card rounded-3xl p-8 mb-8">
+                <div id="photoGallery" class="slide-container">
+                    <div class="slide active">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-primary to-accent2 hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(1)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-image text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">ورشة التصوير</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-accent1 to-secondary hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(2)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-microphone text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">جلسة إذاعية</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-accent2 to-primary hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(3)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-video text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">إنتاج فيديو</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-secondary to-accent1 hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(4)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-theater-masks text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">عرض مسرحي</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slide">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-primary to-secondary hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(5)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-paint-brush text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">ورشة فنية</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-accent2 to-accent1 hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(6)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-music text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">حفل موسيقي</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-accent1 to-primary hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(7)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-pen-fancy text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">ورشة كتابة</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="relative group overflow-hidden rounded-2xl aspect-square bg-gradient-to-br from-secondary to-accent2 hover:scale-105 transition-all duration-500 cursor-pointer" onclick="viewImage(8)">
+                                <div class="absolute inset-0 flex items-center justify-center text-white">
+                                    <div class="text-center">
+                                        <i class="fas fa-film text-4xl mb-2"></i>
+                                        <p class="text-sm font-bold">مهرجان سينما</p>
+                                    </div>
+                                </div>
+                                <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300"></div>
+                                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <i class="fas fa-expand text-white text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gallery Navigation -->
+                <div class="flex justify-center items-center gap-4 mt-8">
+                    <button onclick="prevSlide()" class="glass hover:neon-glow p-3 rounded-full transition-all duration-300">
+                        <i class="fas fa-chevron-right text-white"></i>
+                    </button>
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 bg-accent2 rounded-full slide-indicator active" data-slide="0"></div>
+                        <div class="w-3 h-3 bg-gray-400 rounded-full slide-indicator" data-slide="1"></div>
+                    </div>
+                    <button onclick="nextSlide()" class="glass hover:neon-glow p-3 rounded-full transition-all duration-300">
+                        <i class="fas fa-chevron-left text-white"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <button onclick="openFullGallery()" class="tech-gradient hover:neon-glow text-white px-10 py-4 rounded-2xl text-lg font-bold transition-all duration-300">
+                    <i class="fas fa-images ml-2"></i>
+                    عرض المعرض الكامل
+                </button>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8">من نحن</h2>
+            <div class="bg-white rounded-xl p-8 shadow-lg mb-8">
+                <p class="text-lg text-gray-700 leading-relaxed text-center mb-6">
+                    نحن مجموعة من الشباب المبدع والمتحمس لتطوير مهاراتنا في مجالات الإعلام والثقافة. 
+                    نؤمن بقوة الإبداع والتعاون في بناء مستقبل أفضل للثقافة العربية.
+                </p>
+                
+                <!-- Video Section -->
+                <div class="bg-gradient-to-br from-primary to-accent2 h-64 rounded-lg flex items-center justify-center mb-8 text-white shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:scale-[1.02] border border-white border-opacity-20" style="box-shadow: 0 25px 50px -12px rgba(23, 130, 125, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);">
+                    <div class="text-center">
+                        <i class="fas fa-play-circle text-6xl mb-4 drop-shadow-lg"></i>
+                        <p class="text-xl font-bold drop-shadow-md">فيديو تعريفي عن النادي</p>
+                        <p class="text-sm opacity-80 drop-shadow-sm">(يتم تشغيله تلقائياً)</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Members Grid -->
+            <div class="mb-8">
+                <h3 class="text-2xl font-bold text-center text-primary mb-6">أعضاء النادي</h3>
+                <div id="membersContainer" class="member-grid mb-6">
+                    <!-- Batch 1 -->
+                    <div class="member-batch active">
+                        <div class="bg-white rounded-lg p-4 shadow-lg">
+                            <div class="w-16 h-16 bg-secondary rounded-full mx-auto mb-3 flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h4 class="font-bold text-center text-sm">علي محمد</h4>
+                            <p class="text-xs text-gray-600 text-center">مصور</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-lg">
+                            <div class="w-16 h-16 bg-accent1 rounded-full mx-auto mb-3 flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h4 class="font-bold text-center text-sm">نور أحمد</h4>
+                            <p class="text-xs text-gray-600 text-center">كاتبة</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-lg">
+                            <div class="w-16 h-16 bg-accent2 rounded-full mx-auto mb-3 flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h4 class="font-bold text-center text-sm">حسام علي</h4>
+                            <p class="text-xs text-gray-600 text-center">مخرج</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-lg">
+                            <div class="w-16 h-16 bg-primary rounded-full mx-auto mb-3 flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h4 class="font-bold text-center text-sm">ليلى حسن</h4>
+                            <p class="text-xs text-gray-600 text-center">مذيعة</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <button onclick="nextMemberBatch()" class="bg-secondary hover:bg-primary text-white px-6 py-2 rounded-lg transition-colors">
+                        الأعضاء التالية
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Member Creations Section -->
+        <section id="creations" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8">إبداعات الأعضاء</h2>
+            <p class="text-center text-gray-600 mb-6">مجموعة من أفضل الأعمال الإبداعية لأعضاء النادي</p>
+            
+            <div class="slide-container bg-white rounded-xl p-6 shadow-lg">
+                <div class="slide active">
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="relative bg-gradient-to-br from-secondary to-accent1 h-32 rounded-lg overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center text-white">
+                                <i class="fas fa-image text-3xl"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                                <button class="heart-btn text-white" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="text-white" onclick="showComments()">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative bg-gradient-to-br from-accent2 to-primary h-32 rounded-lg overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center text-white">
+                                <i class="fas fa-video text-3xl"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                                <button class="heart-btn text-white" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="text-white" onclick="showComments()">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative bg-gradient-to-br from-primary to-secondary h-32 rounded-lg overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center text-white">
+                                <i class="fas fa-music text-3xl"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                                <button class="heart-btn text-white" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="text-white" onclick="showComments()">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative bg-gradient-to-br from-accent1 to-accent2 h-32 rounded-lg overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center text-white">
+                                <i class="fas fa-paint-brush text-3xl"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                                <button class="heart-btn text-white" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="text-white" onclick="showComments()">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="relative bg-gradient-to-br from-secondary to-primary h-32 rounded-lg overflow-hidden">
+                            <div class="absolute inset-0 flex items-center justify-center text-white">
+                                <i class="fas fa-pen-fancy text-3xl"></i>
+                            </div>
+                            <div class="absolute bottom-2 left-2 right-2 flex justify-between items-center">
+                                <button class="heart-btn text-white" onclick="toggleLike(this)">
+                                    <i class="fas fa-heart"></i>
+                                </button>
+                                <button class="text-white" onclick="showComments()">
+                                    <i class="fas fa-comment"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses Section -->
+        <section id="courses" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8">الدورات والورشات</h2>
+            <p class="text-center text-gray-600 mb-6">برامج تدريبية متخصصة لتطوير المهارات الإعلامية والثقافية</p>
+            
+            <div class="slide-container bg-white rounded-xl p-6 shadow-lg">
+                <div class="slide active">
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                        <div class="bg-gradient-to-br from-primary to-secondary rounded-lg p-6 text-white text-center">
+                            <i class="fas fa-camera text-4xl mb-4"></i>
+                            <h3 class="font-bold">التصوير الاحترافي</h3>
+                        </div>
+                        <div class="bg-gradient-to-br from-accent1 to-accent2 rounded-lg p-6 text-white text-center">
+                            <i class="fas fa-microphone text-4xl mb-4"></i>
+                            <h3 class="font-bold">فن الإذاعة</h3>
+                        </div>
+                        <div class="bg-gradient-to-br from-accent2 to-primary rounded-lg p-6 text-white text-center">
+                            <i class="fas fa-video text-4xl mb-4"></i>
+                            <h3 class="font-bold">المونتاج والإخراج</h3>
+                        </div>
+                        <div class="bg-gradient-to-br from-secondary to-accent1 rounded-lg p-6 text-white text-center">
+                            <i class="fas fa-pen-fancy text-4xl mb-4"></i>
+                            <h3 class="font-bold">الكتابة الإبداعية</h3>
+                        </div>
+                        <div class="bg-gradient-to-br from-primary to-accent2 rounded-lg p-6 text-white text-center">
+                            <i class="fas fa-theater-masks text-4xl mb-4"></i>
+                            <h3 class="font-bold">فنون المسرح</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Join Us Section -->
+        <section id="join" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8">انضم إلينا</h2>
+            <div class="bg-white rounded-xl p-8 shadow-lg text-center">
+                <p class="text-lg text-gray-700 mb-6">
+                    كن جزءاً من عائلة النادي وطور مواهبك الإعلامية والثقافية معنا
+                </p>
+                <button onclick="openJoinForm()" class="bg-accent2 hover:bg-accent1 text-white px-8 py-3 rounded-lg text-lg transition-colors">
+                    <i class="fas fa-user-plus ml-2"></i>
+                    سجل الآن
+                </button>
+            </div>
+        </section>
+
+        <!-- News Section -->
+        <section id="news" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8">الأخبار والتحديثات</h2>
+            <div class="bg-white rounded-xl p-8 shadow-lg text-center">
+                <p class="text-lg text-gray-700 mb-6">
+                    تابع آخر أخبار النادي وفعالياته القادمة
+                </p>
+                <button onclick="openNews()" class="bg-primary hover:bg-accent1 text-white px-8 py-3 rounded-lg text-lg transition-colors">
+                    <i class="fas fa-newspaper ml-2"></i>
+                    اقرأ الأخبار
+                </button>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact" class="mb-16">
+            <h2 class="text-3xl font-bold text-center text-primary mb-8">اتصل بنا</h2>
+            <div class="bg-white rounded-xl p-8 shadow-lg">
+                <!-- Contact Form -->
+                <div class="mb-8">
+                    <h3 class="text-xl font-bold text-primary mb-6 text-center">أرسل لنا رسالة</h3>
+                    <form class="max-w-2xl mx-auto space-y-6" onsubmit="handleContactForm(event)">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">الاسم الكامل *</label>
+                                <input id="contactName" type="text" required placeholder="أدخل اسمك الكامل" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">البريد الإلكتروني *</label>
+                                <input id="contactEmail" type="email" required placeholder="example@email.com" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300">
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الموضوع</label>
+                            <input id="contactSubject" type="text" placeholder="موضوع الرسالة (اختياري)" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">الرسالة *</label>
+                            <textarea id="contactMessage" rows="5" required placeholder="اكتب رسالتك هنا..." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 resize-none"></textarea>
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="tech-gradient hover:neon-glow text-white px-8 py-3 rounded-xl text-lg font-bold transition-all duration-300 transform hover:scale-105">
+                                <i class="fas fa-paper-plane ml-2"></i>
+                                إرسال الرسالة
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Divider -->
+                <div class="flex items-center justify-center mb-8">
+                    <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                    <span class="px-4 text-gray-500 text-sm">أو تواصل معنا عبر</span>
+                    <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                </div>
+                
+                <!-- Social Media Links -->
+                <div class="flex justify-center gap-8">
+                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-full text-2xl transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a href="#" class="bg-pink-600 hover:bg-pink-700 text-white p-4 rounded-full text-2xl transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="bg-black hover:bg-gray-800 text-white p-4 rounded-full text-2xl transition-all duration-300 transform hover:scale-110 hover:shadow-lg">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- News Modal -->
+    <div id="newsModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-4xl w-full mx-4 border border-white border-opacity-20 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-newspaper text-accent2"></i>
+                    الأخبار والتحديثات
+                </h3>
+                <button onclick="closeNewsModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <!-- Add News Button -->
+            <div class="text-center mb-8">
+                <button onclick="openPasswordModal()" class="tech-gradient hover:neon-glow text-white px-6 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-plus ml-2"></i>
+                    إضافة خبر جديد
+                </button>
+            </div>
+            
+            <!-- News List -->
+            <div id="newsList" class="space-y-6">
+                <!-- News items will be displayed here -->
+                <div class="text-center text-gray-400 py-12">
+                    <i class="fas fa-newspaper text-4xl mb-4"></i>
+                    <p class="text-lg">لا توجد أخبار حالياً</p>
+                    <p class="text-sm">كن أول من يضيف خبراً جديداً!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-md w-full mx-4 border border-white border-opacity-20">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-lock text-accent2"></i>
+                    كلمة المرور المطلوبة
+                </h3>
+                <button onclick="closePasswordModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                </div>
+                <p class="text-gray-300 text-sm">يرجى إدخال كلمة المرور للمتابعة</p>
+            </div>
+            
+            <form onsubmit="verifyPassword(event)" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">كلمة المرور *</label>
+                    <input id="passwordInput" type="password" required placeholder="أدخل كلمة المرور" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm text-center text-lg tracking-widest">
+                </div>
+                
+                <div id="passwordError" class="hidden bg-red-500 bg-opacity-20 border border-red-400 border-opacity-30 rounded-xl p-3 text-center">
+                    <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+                    <span class="text-red-300 text-sm">كلمة المرور غير صحيحة</span>
+                </div>
+                
+                <button type="submit" class="w-full tech-gradient hover:neon-glow text-white py-3 rounded-xl transition-all duration-300 font-bold">
+                    <i class="fas fa-unlock ml-2"></i>
+                    تأكيد
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add News Modal -->
+    <div id="addNewsModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="tech-card rounded-2xl p-8 max-w-2xl w-full mx-4 border border-white border-opacity-20 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-8">
+                <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                    <i class="fas fa-plus-circle text-accent2"></i>
+                    إضافة خبر جديد
+                </h3>
+                <button onclick="closeAddNewsModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form onsubmit="submitNews(event)" class="space-y-6">
+                <!-- News Image Upload -->
+                <div class="text-center">
+                    <div class="relative inline-block">
+                        <div id="newsImagePreview" class="w-full h-48 bg-white bg-opacity-10 rounded-xl flex items-center justify-center overflow-hidden mb-4 cursor-pointer border-2 border-dashed border-white border-opacity-30 hover:border-accent2 transition-colors" onclick="selectNewsImage()">
+                            <div class="text-center text-gray-400">
+                                <i class="fas fa-image text-4xl mb-2"></i>
+                                <p class="text-sm">انقر لإضافة صورة الخبر</p>
+                                <p class="text-xs opacity-70">(اختياري)</p>
+                            </div>
+                        </div>
+                        <input type="file" id="newsImageInput" accept="image/*" class="hidden" onchange="handleNewsImageUpload(event)">
+                    </div>
+                </div>
+
+                <!-- News Title -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">عنوان الخبر *</label>
+                    <input id="newsTitle" type="text" required placeholder="أدخل عنوان الخبر" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm">
+                </div>
+
+                <!-- News Description -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">وصف الخبر *</label>
+                    <textarea id="newsDescription" rows="6" required placeholder="اكتب تفاصيل الخبر هنا..." class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm resize-none"></textarea>
+                </div>
+
+                <!-- News Category -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-3">تصنيف الخبر</label>
+                    <select id="newsCategory" class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white backdrop-blur-sm">
+                        <option value="عام">عام</option>
+                        <option value="فعاليات">فعاليات</option>
+                        <option value="ورشات">ورشات</option>
+                        <option value="إنجازات">إنجازات</option>
+                        <option value="إعلانات">إعلانات</option>
+                    </select>
+                </div>
+
+                <div class="flex gap-4">
+                    <button type="submit" class="flex-1 tech-gradient hover:neon-glow text-white py-4 rounded-xl transition-all duration-300 font-bold text-lg">
+                        <i class="fas fa-paper-plane ml-2"></i>
+                        نشر الخبر
+                    </button>
+                    <button type="button" onclick="closeAddNewsModal()" class="px-8 py-4 bg-gray-600 hover:bg-gray-700 text-white rounded-xl transition-colors">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Card Modal -->
+    <div id="successCardModal" class="modal fixed inset-0 bg-black bg-opacity-70 z-50 items-center justify-center backdrop-blur-sm">
+        <div class="relative max-w-md w-full mx-4">
+            <!-- Success Card -->
+            <div id="successCard" class="tech-card rounded-3xl p-8 text-center border border-green-400 border-opacity-30 shadow-2xl transform scale-95 opacity-0 transition-all duration-500">
+                <!-- Success Icon -->
+                <div class="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full mx-auto mb-6 flex items-center justify-center shadow-lg animate-pulse">
+                    <i class="fas fa-check text-white text-3xl"></i>
+                </div>
+                
+                <!-- Success Message -->
+                <h3 class="text-2xl font-bold text-white mb-4">تم الحفظ بنجاح! 🎉</h3>
+                <div class="bg-white bg-opacity-10 rounded-xl p-4 mb-6 border border-white border-opacity-20">
+                    <p class="text-green-300 text-lg font-medium mb-2">مرحباً بك</p>
+                    <p id="successUserName" class="text-white text-xl font-bold"></p>
+                </div>
+                
+                <p class="text-gray-300 leading-relaxed mb-6">
+                    تم حفظ معلوماتك الشخصية بنجاح! أهلاً وسهلاً بك في نادي مواهب الإعلام والثقافة.
+                </p>
+                
+                <!-- Decorative Elements -->
+                <div class="flex justify-center gap-2 mb-6">
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                    <div class="w-2 h-2 bg-green-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                </div>
+                
+                <button onclick="closeSuccessCard()" class="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-8 py-3 rounded-xl font-bold transition-all duration-300 transform hover:scale-105">
+                    <i class="fas fa-thumbs-up ml-2"></i>
+                    رائع!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay for sidebar -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden" onclick="toggleSidebar()"></div>
+
+    <script>
+        let currentSlide = 0;
+        let currentMemberBatch = 0;
+        const totalMemberBatches = 8;
+
+        // Sidebar functionality
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Login modal functionality
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.add('show');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.remove('show');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            // Simple validation - in real app, this would check against a database
+            if (email && password) {
+                // Generate username from email
+                const username = email.split('@')[0];
+                
+                // Store basic login info
+                const basicUserData = {
+                    username: username,
+                    email: email,
+                    password: password,
+                    loginDate: new Date().toISOString(),
+                    profileComplete: false
+                };
+                
+                localStorage.setItem('userData', JSON.stringify(basicUserData));
+                localStorage.setItem('isLoggedIn', 'true');
+                
+                closeLoginModal();
+                
+                // Show user info form to complete profile
+                openUserInfoModal(email);
+                
+                // Reset login form
+                document.querySelector('#loginModal form').reset();
+            }
+        }
+
+        function openUserInfoModal(email) {
+            document.getElementById('userInfoEmail').value = email;
+            document.getElementById('userInfoModal').classList.add('show');
+        }
+
+        function closeUserInfoModal() {
+            document.getElementById('userInfoModal').classList.remove('show');
+        }
+
+        function selectUserInfoImage() {
+            document.getElementById('userInfoImageInput').click();
+        }
+
+        function handleUserInfoImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    document.getElementById('userInfoProfileImage').innerHTML = `<img src="${imageUrl}" alt="صورة شخصية" class="w-full h-full object-cover rounded-full">`;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function handleUserInfoSubmit(event) {
+            event.preventDefault();
+            
+            // Get existing user data
+            const existingData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            // Collect form data
+            const fullName = document.getElementById('userInfoFullName').value;
+            const phone = document.getElementById('userInfoPhone').value;
+            const email = document.getElementById('userInfoEmail').value;
+            const userType = document.getElementById('userInfoUserType').value;
+            const passion = document.getElementById('userInfoPassion').value;
+            
+            // Get user type label
+            const userTypeLabels = {
+                'student': 'طالب جامعي',
+                'doctor': 'دكتور',
+                'visitor': 'زائر'
+            };
+            
+            // Update user data with complete information
+            const completeUserData = {
+                ...existingData,
+                fullName: fullName,
+                phone: phone,
+                userType: userType,
+                userTypeLabel: userTypeLabels[userType],
+                passion: passion,
+                profileComplete: true,
+                profileCompletedDate: new Date().toISOString()
+            };
+            
+            // Store complete user data
+            localStorage.setItem('userData', JSON.stringify(completeUserData));
+            
+            // Store profile image if uploaded
+            const profileImageSrc = document.getElementById('userInfoProfileImage').querySelector('img');
+            if (profileImageSrc) {
+                localStorage.setItem('profileImage', profileImageSrc.src);
+            }
+            
+            // Update UI
+            showProfileSection(completeUserData);
+            closeUserInfoModal();
+            
+            // Show success card
+            showSuccessCard(fullName);
+            
+            // Reset form
+            document.querySelector('#userInfoModal form').reset();
+            document.getElementById('userInfoProfileImage').innerHTML = '<i class="fas fa-user text-white text-3xl"></i>';
+        }
+
+        function showSuccessCard(userName) {
+            const modal = document.getElementById('successCardModal');
+            const card = document.getElementById('successCard');
+            const nameElement = document.getElementById('successUserName');
+            
+            // Set user name
+            nameElement.textContent = userName;
+            
+            // Show modal
+            modal.classList.add('show');
+            
+            // Animate card entrance
+            setTimeout(() => {
+                card.style.transform = 'scale(1)';
+                card.style.opacity = '1';
+            }, 100);
+            
+            // Auto close after 4 seconds
+            setTimeout(() => {
+                closeSuccessCard();
+            }, 4000);
+        }
+
+        function closeSuccessCard() {
+            const modal = document.getElementById('successCardModal');
+            const card = document.getElementById('successCard');
+            
+            // Animate card exit
+            card.style.transform = 'scale(0.95)';
+            card.style.opacity = '0';
+            
+            // Hide modal after animation
+            setTimeout(() => {
+                modal.classList.remove('show');
+                // Reset card state
+                card.style.transform = 'scale(0.95)';
+                card.style.opacity = '0';
+            }, 300);
+        }
+
+        function showProfileSection(userData) {
+            document.getElementById('loginBtn').classList.add('hidden');
+            document.getElementById('profileSection').classList.remove('hidden');
+            
+            // Update profile display
+            document.getElementById('userName').textContent = userData.username;
+            document.getElementById('userNameLarge').textContent = userData.fullName;
+            document.getElementById('userEmail').textContent = userData.email;
+            
+            // Update user type display
+            const userTypeElement = document.querySelector('#profileSection .text-xs.opacity-80');
+            if (userTypeElement) {
+                userTypeElement.textContent = userData.userTypeLabel;
+            }
+        }
+
+        function toggleProfileMenu() {
+            const menu = document.getElementById('profileMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function openProfileEditor() {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            // Populate form with current data
+            document.getElementById('editFirstName').value = userData.fullName || '';
+            document.getElementById('editLastName').value = userData.userTypeLabel || '';
+            document.getElementById('editEmail').value = userData.email || '';
+            document.getElementById('editSpecialty').value = userData.userType || '';
+            document.getElementById('editBio').value = userData.passion || '';
+            document.getElementById('editPhone').value = userData.phone || '';
+            
+            document.getElementById('profileEditorModal').classList.add('show');
+            toggleProfileMenu(); // Close dropdown
+        }
+
+        function closeProfileEditor() {
+            document.getElementById('profileEditorModal').classList.remove('show');
+        }
+
+        function selectProfileImage() {
+            document.getElementById('profileImageInput').click();
+        }
+
+
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    
+                    // Update all profile images
+                    const profileImages = [
+                        document.getElementById('profileImage'),
+                        document.getElementById('profileImageLarge'),
+                        document.getElementById('editProfileImage')
+                    ];
+                    
+                    profileImages.forEach(img => {
+                        if (img) {
+                            img.innerHTML = `<img src="${imageUrl}" alt="صورة الملف الشخصي" class="w-full h-full object-cover rounded-full">`;
+                        }
+                    });
+                    
+                    // Store image in localStorage
+                    localStorage.setItem('profileImage', imageUrl);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveProfile(event) {
+            event.preventDefault();
+            
+            // Get existing user data
+            const existingData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            // Update with new values
+            const updatedData = {
+                ...existingData,
+                fullName: document.getElementById('editFirstName').value,
+                phone: document.getElementById('editPhone').value,
+                email: document.getElementById('editEmail').value,
+                userType: document.getElementById('editSpecialty').value,
+                passion: document.getElementById('editBio').value
+            };
+            
+            // Update user type label
+            const userTypeLabels = {
+                'student': 'طالب جامعي',
+                'doctor': 'دكتور',
+                'visitor': 'زائر'
+            };
+            updatedData.userTypeLabel = userTypeLabels[updatedData.userType] || updatedData.userTypeLabel;
+            
+            // Save to localStorage
+            localStorage.setItem('userData', JSON.stringify(updatedData));
+            
+            // Update UI
+            showProfileSection(updatedData);
+            closeProfileEditor();
+            
+            alert('تم حفظ التغييرات بنجاح!');
+        }
+
+        function viewMyCreations() {
+            toggleProfileMenu();
+            alert('سيتم فتح صفحة إبداعاتك الشخصية مع إمكانية إضافة أعمال جديدة وإدارة المحتوى الخاص بك.');
+        }
+
+        function viewMyActivity() {
+            toggleProfileMenu();
+            alert('سيتم عرض إحصائيات نشاطك في النادي، المشاركات، التفاعلات، والإنجازات الشخصية.');
+        }
+
+        function accountSettings() {
+            toggleProfileMenu();
+            alert('سيتم فتح إعدادات الحساب لتغيير كلمة المرور وإعدادات الخصوصية والإشعارات.');
+        }
+
+        function logout() {
+            localStorage.removeItem('userData');
+            localStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('profileImage');
+            
+            // Reset UI
+            document.getElementById('loginBtn').classList.remove('hidden');
+            document.getElementById('profileSection').classList.add('hidden');
+            toggleProfileMenu();
+            
+            // Reset profile images
+            const profileImages = [
+                document.getElementById('profileImage'),
+                document.getElementById('profileImageLarge'),
+                document.getElementById('editProfileImage')
+            ];
+            
+            profileImages.forEach(img => {
+                if (img) {
+                    img.innerHTML = '<i class="fas fa-user text-white"></i>';
+                }
+            });
+            
+            alert('تم تسجيل الخروج بنجاح. نراك قريباً!');
+        }
+
+        // Presidents slider functionality
+        let currentPresident = 0;
+        const totalPresidents = 7;
+
+        function nextPresident() {
+            const slides = document.querySelectorAll('.president-slide');
+            const indicators = document.querySelectorAll('.president-indicator');
+            
+            slides[currentPresident].classList.remove('active');
+            indicators[currentPresident].classList.remove('active');
+            indicators[currentPresident].classList.add('bg-gray-400');
+            indicators[currentPresident].classList.remove('bg-accent2');
+            
+            currentPresident = (currentPresident + 1) % totalPresidents;
+            
+            slides[currentPresident].classList.add('active');
+            indicators[currentPresident].classList.add('active');
+            indicators[currentPresident].classList.remove('bg-gray-400');
+            indicators[currentPresident].classList.add('bg-accent2');
+        }
+
+        function prevPresident() {
+            const slides = document.querySelectorAll('.president-slide');
+            const indicators = document.querySelectorAll('.president-indicator');
+            
+            slides[currentPresident].classList.remove('active');
+            indicators[currentPresident].classList.remove('active');
+            indicators[currentPresident].classList.add('bg-gray-400');
+            indicators[currentPresident].classList.remove('bg-accent2');
+            
+            currentPresident = (currentPresident - 1 + totalPresidents) % totalPresidents;
+            
+            slides[currentPresident].classList.add('active');
+            indicators[currentPresident].classList.add('active');
+            indicators[currentPresident].classList.remove('bg-gray-400');
+            indicators[currentPresident].classList.add('bg-accent2');
+        }
+
+        function goToPresident(index) {
+            const slides = document.querySelectorAll('.president-slide');
+            const indicators = document.querySelectorAll('.president-indicator');
+            
+            slides[currentPresident].classList.remove('active');
+            indicators[currentPresident].classList.remove('active');
+            indicators[currentPresident].classList.add('bg-gray-400');
+            indicators[currentPresident].classList.remove('bg-accent2');
+            
+            currentPresident = index;
+            
+            slides[currentPresident].classList.add('active');
+            indicators[currentPresident].classList.add('active');
+            indicators[currentPresident].classList.remove('bg-gray-400');
+            indicators[currentPresident].classList.add('bg-accent2');
+        }
+
+        // Auto-slide presidents
+        function startPresidentsSlideShow() {
+            setInterval(() => {
+                nextPresident();
+            }, 5000);
+        }
+
+        // Slide functionality
+        function startSlideShow() {
+            const slideContainers = document.querySelectorAll('.slide-container');
+            
+            slideContainers.forEach(container => {
+                const slides = container.querySelectorAll('.slide');
+                let currentSlide = 0;
+                
+                setInterval(() => {
+                    slides[currentSlide].classList.remove('active');
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    slides[currentSlide].classList.add('active');
+                }, 3000);
+            });
+        }
+
+        // Member batch functionality
+        function nextMemberBatch() {
+            const batches = document.querySelectorAll('.member-batch');
+            batches[currentMemberBatch].classList.remove('active');
+            
+            currentMemberBatch = (currentMemberBatch + 1) % totalMemberBatches;
+            
+            if (!batches[currentMemberBatch]) {
+                createMemberBatch(currentMemberBatch);
+            } else {
+                batches[currentMemberBatch].classList.add('active');
+            }
+        }
+
+        function createMemberBatch(batchIndex) {
+            const container = document.getElementById('membersContainer');
+            const batchDiv = document.createElement('div');
+            batchDiv.className = 'member-batch active';
+            
+            const members = [
+                'يوسف أحمد - مصمم', 'رنا محمد - محررة', 'خالد علي - مصور', 'دينا حسن - كاتبة',
+                'عمر سالم - مخرج', 'هند عبدالله - مذيعة', 'طارق محمود - منتج', 'ريم فاروق - مصممة',
+                'سامي نور - كاتب', 'لينا أحمد - مصورة', 'حازم علي - مخرج', 'نادية حسن - محررة',
+                'وليد محمد - منتج', 'سلمى عبدالله - مذيعة', 'كريم سالم - مصمم', 'هالة فاروق - كاتبة',
+                'أيمن نور - مصور', 'رشا أحمد - محررة', 'محمود علي - مخرج', 'إيمان حسن - مذيعة',
+                'عادل محمد - منتج', 'منى عبدالله - مصممة', 'فادي سالم - كاتب', 'غادة فاروق - مصورة',
+                'باسم نور - مخرج', 'سهى أحمد - محررة', 'نبيل علي - منتج', 'رغد حسن - مذيعة'
+            ];
+            
+            const startIndex = batchIndex * 4;
+            const endIndex = Math.min(startIndex + 4, members.length);
+            
+            for (let i = startIndex; i < endIndex; i++) {
+                if (members[i]) {
+                    const [name, role] = members[i].split(' - ');
+                    const colors = ['bg-secondary', 'bg-accent1', 'bg-accent2', 'bg-primary'];
+                    const colorClass = colors[i % 4];
+                    
+                    batchDiv.innerHTML += `
+                        <div class="bg-white rounded-lg p-4 shadow-lg">
+                            <div class="w-16 h-16 ${colorClass} rounded-full mx-auto mb-3 flex items-center justify-center text-white">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h4 class="font-bold text-center text-sm">${name}</h4>
+                            <p class="text-xs text-gray-600 text-center">${role}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            container.appendChild(batchDiv);
+        }
+
+        // Gallery functionality
+        let currentGallerySlide = 0;
+        const totalGallerySlides = 2;
+
+        function nextSlide() {
+            const slides = document.querySelectorAll('#photoGallery .slide');
+            const indicators = document.querySelectorAll('.slide-indicator');
+            
+            slides[currentGallerySlide].classList.remove('active');
+            indicators[currentGallerySlide].classList.remove('active');
+            indicators[currentGallerySlide].classList.add('bg-gray-400');
+            indicators[currentGallerySlide].classList.remove('bg-accent2');
+            
+            currentGallerySlide = (currentGallerySlide + 1) % totalGallerySlides;
+            
+            slides[currentGallerySlide].classList.add('active');
+            indicators[currentGallerySlide].classList.add('active');
+            indicators[currentGallerySlide].classList.remove('bg-gray-400');
+            indicators[currentGallerySlide].classList.add('bg-accent2');
+        }
+
+        function prevSlide() {
+            const slides = document.querySelectorAll('#photoGallery .slide');
+            const indicators = document.querySelectorAll('.slide-indicator');
+            
+            slides[currentGallerySlide].classList.remove('active');
+            indicators[currentGallerySlide].classList.remove('active');
+            indicators[currentGallerySlide].classList.add('bg-gray-400');
+            indicators[currentGallerySlide].classList.remove('bg-accent2');
+            
+            currentGallerySlide = (currentGallerySlide - 1 + totalGallerySlides) % totalGallerySlides;
+            
+            slides[currentGallerySlide].classList.add('active');
+            indicators[currentGallerySlide].classList.add('active');
+            indicators[currentGallerySlide].classList.remove('bg-gray-400');
+            indicators[currentGallerySlide].classList.add('bg-accent2');
+        }
+
+        function viewImage(imageId) {
+            const imageNames = {
+                1: 'ورشة التصوير الاحترافي',
+                2: 'جلسة إذاعية مباشرة',
+                3: 'إنتاج فيديو وثائقي',
+                4: 'عرض مسرحي تفاعلي',
+                5: 'ورشة فنية إبداعية',
+                6: 'حفل موسيقي للأعضاء',
+                7: 'ورشة كتابة إبداعية',
+                8: 'مهرجان سينما قصيرة'
+            };
+            
+            alert(`عرض الصورة: ${imageNames[imageId]}\n\nسيتم فتح عارض الصور بدقة عالية مع إمكانية التكبير والتعليق والمشاركة.`);
+        }
+
+        function openFullGallery() {
+            alert('سيتم فتح المعرض الكامل مع جميع الصور والفيديوهات بتقنية عرض متقدمة وإمكانيات تفاعلية شاملة.');
+        }
+
+        function openJoinForm() {
+            document.getElementById('joinFormModal').classList.add('show');
+        }
+
+        function closeJoinForm() {
+            document.getElementById('joinFormModal').classList.remove('show');
+        }
+
+        function submitJoinForm(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const formData = {
+                firstName: document.getElementById('joinFirstName').value,
+                lastName: document.getElementById('joinLastName').value,
+                phone: document.getElementById('joinPhone').value,
+                email: document.getElementById('joinEmail').value,
+                faculty: document.getElementById('joinFaculty').value,
+                specialization: document.getElementById('joinSpecialization').value,
+                level: document.getElementById('joinLevel').value,
+                studentId: document.getElementById('joinStudentId').value,
+                experience: document.getElementById('joinExperience').value,
+                motivation: document.getElementById('joinMotivation').value,
+                interests: []
+            };
+            
+            // Collect selected interests
+            const interestCheckboxes = document.querySelectorAll('input[name="interests"]:checked');
+            interestCheckboxes.forEach(checkbox => {
+                formData.interests.push(checkbox.value);
+            });
+            
+            // Validate interests selection
+            if (formData.interests.length === 0) {
+                alert('يرجى اختيار مجال واحد على الأقل من اهتماماتك');
+                return;
+            }
+            
+            // Store application data
+            const applicationId = 'APP_' + Date.now();
+            localStorage.setItem(`joinApplication_${applicationId}`, JSON.stringify({
+                ...formData,
+                applicationId: applicationId,
+                submissionDate: new Date().toISOString(),
+                status: 'pending'
+            }));
+            
+            // Show success message
+            alert(`تم إرسال طلب الانضمام بنجاح! 🎉
+
+رقم الطلب: ${applicationId}
+
+سيتم مراجعة طلبك من قبل إدارة النادي والتواصل معك خلال 3-5 أيام عمل.
+
+شكراً لاهتمامك بالانضمام لنادي مواهب الإعلام والثقافة!`);
+            
+            // Reset form and close modal
+            document.querySelector('#joinFormModal form').reset();
+            closeJoinForm();
+        }
+
+        function openNews() {
+            document.getElementById('newsModal').classList.add('show');
+            loadNews();
+        }
+
+        function closeNewsModal() {
+            document.getElementById('newsModal').classList.remove('show');
+        }
+
+        function openPasswordModal() {
+            document.getElementById('passwordModal').classList.add('show');
+            document.getElementById('passwordInput').focus();
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.remove('show');
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordError').classList.add('hidden');
+        }
+
+        function verifyPassword(event) {
+            event.preventDefault();
+            
+            const password = document.getElementById('passwordInput').value;
+            const correctPassword = '08102004';
+            
+            if (password === correctPassword) {
+                closePasswordModal();
+                openAddNewsModal();
+            } else {
+                document.getElementById('passwordError').classList.remove('hidden');
+                document.getElementById('passwordInput').value = '';
+                
+                // Hide error after 3 seconds
+                setTimeout(() => {
+                    document.getElementById('passwordError').classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function openAddNewsModal() {
+            document.getElementById('addNewsModal').classList.add('show');
+        }
+
+        function closeAddNewsModal() {
+            document.getElementById('addNewsModal').classList.remove('show');
+            // Reset form
+            document.querySelector('#addNewsModal form').reset();
+            document.getElementById('newsImagePreview').innerHTML = `
+                <div class="text-center text-gray-400">
+                    <i class="fas fa-image text-4xl mb-2"></i>
+                    <p class="text-sm">انقر لإضافة صورة الخبر</p>
+                    <p class="text-xs opacity-70">(اختياري)</p>
+                </div>
+            `;
+        }
+
+        function selectNewsImage() {
+            document.getElementById('newsImageInput').click();
+        }
+
+        function handleNewsImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const imageUrl = e.target.result;
+                    document.getElementById('newsImagePreview').innerHTML = `
+                        <img src="${imageUrl}" alt="صورة الخبر" class="w-full h-full object-cover rounded-xl">
+                        <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 rounded-xl flex items-center justify-center">
+                            <i class="fas fa-edit text-white text-2xl opacity-0 hover:opacity-100 transition-opacity duration-300"></i>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function submitNews(event) {
+            event.preventDefault();
+            
+            const title = document.getElementById('newsTitle').value;
+            const description = document.getElementById('newsDescription').value;
+            const category = document.getElementById('newsCategory').value;
+            const imageElement = document.getElementById('newsImagePreview').querySelector('img');
+            const image = imageElement ? imageElement.src : null;
+            
+            const newsItem = {
+                id: 'NEWS_' + Date.now(),
+                title: title,
+                description: description,
+                category: category,
+                image: image,
+                publishDate: new Date().toISOString(),
+                publishDateFormatted: new Date().toLocaleDateString('ar-SA', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            
+            // Save to localStorage
+            const existingNews = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            existingNews.unshift(newsItem); // Add to beginning of array
+            localStorage.setItem('clubNews', JSON.stringify(existingNews));
+            
+            // Close modal and refresh news list
+            closeAddNewsModal();
+            loadNews();
+            
+            // Show success message
+            alert(`✅ تم نشر الخبر بنجاح!
+
+📰 العنوان: ${title}
+📂 التصنيف: ${category}
+📅 تاريخ النشر: ${newsItem.publishDateFormatted}
+
+سيظهر الخبر الآن في أعلى قائمة الأخبار!`);
+        }
+
+        function loadNews() {
+            const newsList = document.getElementById('newsList');
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            
+            if (news.length === 0) {
+                newsList.innerHTML = `
+                    <div class="text-center text-gray-400 py-12">
+                        <i class="fas fa-newspaper text-4xl mb-4"></i>
+                        <p class="text-lg">لا توجد أخبار حالياً</p>
+                        <p class="text-sm">كن أول من يضيف خبراً جديداً!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            newsList.innerHTML = news.map(item => {
+                // Get like information for this news
+                const newsLikes = JSON.parse(localStorage.getItem('newsLikes') || '{}');
+                const currentUserId = getCurrentUserId();
+                const itemLikes = newsLikes[item.id] || { count: 0, users: [] };
+                const isLiked = itemLikes.users.includes(currentUserId);
+                const likeCount = itemLikes.count;
+                
+                return `
+                    <div class="bg-white bg-opacity-10 rounded-2xl p-6 border border-white border-opacity-20 hover:bg-opacity-15 transition-all duration-300" data-news-id="${item.id}">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            ${item.image ? `
+                                <div class="md:w-1/3">
+                                    <img src="${item.image}" alt="${item.title}" class="w-full h-48 object-cover rounded-xl shadow-lg">
+                                </div>
+                            ` : ''}
+                            <div class="${item.image ? 'md:w-2/3' : 'w-full'}">
+                                <div class="flex items-center gap-3 mb-4">
+                                    <span class="bg-accent2 bg-opacity-20 text-accent2 px-3 py-1 rounded-full text-sm font-medium border border-accent2 border-opacity-30">
+                                        ${item.category}
+                                    </span>
+                                    <span class="text-gray-400 text-sm flex items-center gap-1">
+                                        <i class="fas fa-clock"></i>
+                                        ${item.publishDateFormatted}
+                                    </span>
+                                </div>
+                                <h4 class="text-xl font-bold text-white mb-4 leading-relaxed">${item.title}</h4>
+                                <p class="text-gray-300 leading-relaxed text-sm">${item.description}</p>
+                                <div class="flex items-center justify-between mt-6">
+                                    <div class="flex items-center gap-4">
+                                        <button onclick="likeNews('${item.id}')" class="like-button ${isLiked ? 'text-red-500' : 'text-gray-400'} hover:text-red-400 transition-colors flex items-center gap-2">
+                                            <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i>
+                                            <span class="like-text text-sm">إعجاب</span>
+                                            <span class="like-count text-xs">${likeCount > 0 ? `(${likeCount})` : ''}</span>
+                                        </button>
+                                        <button onclick="shareNews('${item.id}')" class="text-gray-400 hover:text-accent2 transition-colors flex items-center gap-2">
+                                            <i class="fas fa-share"></i>
+                                            <span class="text-sm">مشاركة</span>
+                                        </button>
+                                        <button onclick="addComment('${item.id}')" class="text-gray-400 hover:text-blue-400 transition-colors flex items-center gap-2">
+                                            <i class="fas fa-comment"></i>
+                                            <span class="text-sm">تعليق</span>
+                                        </button>
+                                    </div>
+                                    <button onclick="deleteNews('${item.id}')" class="text-gray-500 hover:text-red-400 transition-colors text-sm">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function likeNews(newsId) {
+            // Get current likes from localStorage
+            const newsLikes = JSON.parse(localStorage.getItem('newsLikes') || '{}');
+            const currentUserId = getCurrentUserId();
+            
+            // Initialize likes for this news if not exists
+            if (!newsLikes[newsId]) {
+                newsLikes[newsId] = {
+                    count: 0,
+                    users: []
+                };
+            }
+            
+            // Check if user already liked this news
+            const userIndex = newsLikes[newsId].users.indexOf(currentUserId);
+            
+            if (userIndex === -1) {
+                // User hasn't liked yet, add like
+                newsLikes[newsId].count++;
+                newsLikes[newsId].users.push(currentUserId);
+                
+                // Update UI
+                updateLikeButton(newsId, true, newsLikes[newsId].count);
+                
+                // Show success message
+                showLikeNotification('تم الإعجاب بالخبر! ❤️', 'like');
+            } else {
+                // User already liked, remove like
+                newsLikes[newsId].count--;
+                newsLikes[newsId].users.splice(userIndex, 1);
+                
+                // Update UI
+                updateLikeButton(newsId, false, newsLikes[newsId].count);
+                
+                // Show success message
+                showLikeNotification('تم إلغاء الإعجاب', 'unlike');
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('newsLikes', JSON.stringify(newsLikes));
+        }
+
+        function getCurrentUserId() {
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            return userData.email || 'anonymous_' + Date.now();
+        }
+
+        function updateLikeButton(newsId, isLiked, likeCount) {
+            // Find the like button for this news
+            const newsElements = document.querySelectorAll('[data-news-id]');
+            newsElements.forEach(element => {
+                if (element.getAttribute('data-news-id') === newsId) {
+                    const likeButton = element.querySelector('.like-button');
+                    const likeIcon = likeButton.querySelector('i');
+                    const likeText = likeButton.querySelector('.like-text');
+                    const likeCount = likeButton.querySelector('.like-count');
+                    
+                    if (isLiked) {
+                        likeIcon.className = 'fas fa-heart text-red-500';
+                        likeButton.className = likeButton.className.replace('text-gray-400', 'text-red-500');
+                    } else {
+                        likeIcon.className = 'far fa-heart';
+                        likeButton.className = likeButton.className.replace('text-red-500', 'text-gray-400');
+                    }
+                    
+                    if (likeCount) {
+                        likeCount.textContent = likeCount > 0 ? `(${likeCount})` : '';
+                    }
+                }
+            });
+        }
+
+        function showLikeNotification(message, type) {
+            const notification = document.createElement('div');
+            const bgColor = type === 'like' ? 'bg-red-500' : 'bg-gray-600';
+            const icon = type === 'like' ? 'fa-heart' : 'fa-heart-broken';
+            
+            notification.className = `fixed top-4 left-4 z-50 ${bgColor} text-white px-4 py-3 rounded-xl shadow-2xl transform -translate-x-full transition-transform duration-300`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fas ${icon}"></i>
+                    <span class="text-sm font-medium">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(-100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        function shareNews(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (newsItem) {
+                showShareModal(newsItem);
+            }
+        }
+
+        function showShareModal(newsItem) {
+            // Create share modal
+            const shareModal = document.createElement('div');
+            shareModal.className = 'modal fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center backdrop-blur-sm';
+            shareModal.id = 'shareModal';
+            
+            shareModal.innerHTML = `
+                <div class="tech-card rounded-2xl p-8 max-w-md w-full mx-4 border border-white border-opacity-20">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                            <i class="fas fa-share-alt text-accent2"></i>
+                            مشاركة الخبر
+                        </h3>
+                        <button onclick="closeShareModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="bg-white bg-opacity-10 rounded-xl p-4 mb-6 border border-white border-opacity-20">
+                        <h4 class="text-white font-bold text-sm mb-2">${newsItem.title}</h4>
+                        <p class="text-gray-300 text-xs leading-relaxed">${newsItem.description.substring(0, 100)}...</p>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <button onclick="shareToFacebook('${newsItem.id}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                            <i class="fab fa-facebook-f text-lg"></i>
+                            مشاركة على فيسبوك
+                        </button>
+                        
+                        <button onclick="shareToTwitter('${newsItem.id}')" class="w-full bg-black hover:bg-gray-800 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                            <i class="fab fa-twitter text-lg"></i>
+                            مشاركة على تويتر
+                        </button>
+                        
+                        <button onclick="shareToWhatsApp('${newsItem.id}')" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                            <i class="fab fa-whatsapp text-lg"></i>
+                            مشاركة على واتساب
+                        </button>
+                        
+                        <button onclick="shareToTelegram('${newsItem.id}')" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                            <i class="fab fa-telegram text-lg"></i>
+                            مشاركة على تيليجرام
+                        </button>
+                        
+                        <button onclick="copyNewsLink('${newsItem.id}')" class="w-full bg-gray-600 hover:bg-gray-700 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-medium">
+                            <i class="fas fa-copy text-lg"></i>
+                            نسخ الرابط
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(shareModal);
+        }
+
+        function closeShareModal() {
+            const shareModal = document.getElementById('shareModal');
+            if (shareModal) {
+                shareModal.remove();
+            }
+        }
+
+        function shareToFacebook(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (newsItem) {
+                const shareText = encodeURIComponent(`${newsItem.title}\n\n${newsItem.description}\n\n🎯 نادي مواهب الإعلام والثقافة - TMCC`);
+                const shareUrl = encodeURIComponent(window.location.href);
+                
+                const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}&quote=${shareText}`;
+                window.open(facebookUrl, '_blank', 'width=600,height=400');
+                
+                closeShareModal();
+                showShareSuccess('فيسبوك');
+            }
+        }
+
+        function shareToTwitter(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (newsItem) {
+                const shareText = encodeURIComponent(`${newsItem.title}\n\n${newsItem.description.substring(0, 200)}...\n\n#نادي_مواهب_الإعلام #TMCC #الجزائر`);
+                const shareUrl = encodeURIComponent(window.location.href);
+                
+                const twitterUrl = `https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`;
+                window.open(twitterUrl, '_blank', 'width=600,height=400');
+                
+                closeShareModal();
+                showShareSuccess('تويتر');
+            }
+        }
+
+        function shareToWhatsApp(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (newsItem) {
+                const shareText = encodeURIComponent(`🎯 *${newsItem.title}*\n\n${newsItem.description}\n\n📅 ${newsItem.publishDateFormatted}\n\n🏛️ نادي مواهب الإعلام والثقافة - TMCC\n${window.location.href}`);
+                
+                const whatsappUrl = `https://wa.me/?text=${shareText}`;
+                window.open(whatsappUrl, '_blank');
+                
+                closeShareModal();
+                showShareSuccess('واتساب');
+            }
+        }
+
+        function shareToTelegram(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (newsItem) {
+                const shareText = encodeURIComponent(`🎯 ${newsItem.title}\n\n${newsItem.description}\n\n📅 ${newsItem.publishDateFormatted}\n\n🏛️ نادي مواهب الإعلام والثقافة - TMCC`);
+                const shareUrl = encodeURIComponent(window.location.href);
+                
+                const telegramUrl = `https://t.me/share/url?url=${shareUrl}&text=${shareText}`;
+                window.open(telegramUrl, '_blank');
+                
+                closeShareModal();
+                showShareSuccess('تيليجرام');
+            }
+        }
+
+        function copyNewsLink(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (newsItem) {
+                const shareText = `🎯 ${newsItem.title}\n\n${newsItem.description}\n\n📅 ${newsItem.publishDateFormatted}\n\n🏛️ نادي مواهب الإعلام والثقافة - TMCC\n\n🔗 ${window.location.href}`;
+                
+                navigator.clipboard.writeText(shareText).then(() => {
+                    closeShareModal();
+                    showShareSuccess('الحافظة');
+                }).catch(() => {
+                    // Fallback for older browsers
+                    const textArea = document.createElement('textarea');
+                    textArea.value = shareText;
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    
+                    closeShareModal();
+                    showShareSuccess('الحافظة');
+                });
+            }
+        }
+
+        function showShareSuccess(platform) {
+            // Create success notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 z-50 bg-green-600 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-transform duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-check-circle text-xl"></i>
+                    <div>
+                        <p class="font-bold">تم بنجاح! 🎉</p>
+                        <p class="text-sm opacity-90">تمت المشاركة على ${platform}</p>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Animate out and remove
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        function deleteNews(newsId) {
+            if (confirm('هل أنت متأكد من حذف هذا الخبر؟')) {
+                const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+                const updatedNews = news.filter(item => item.id !== newsId);
+                localStorage.setItem('clubNews', JSON.stringify(updatedNews));
+                loadNews();
+                alert('تم حذف الخبر بنجاح!');
+            }
+        }
+
+        function toggleLike(button) {
+            button.classList.toggle('liked');
+        }
+
+        function addComment(newsId) {
+            // Check if user is logged in
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            if (!userData.username) {
+                alert('يجب تسجيل الدخول أولاً لإضافة تعليق');
+                openLoginModal();
+                return;
+            }
+            
+            showCommentModal(newsId);
+        }
+
+        function showCommentModal(newsId) {
+            const news = JSON.parse(localStorage.getItem('clubNews') || '[]');
+            const newsItem = news.find(item => item.id === newsId);
+            
+            if (!newsItem) return;
+            
+            // Create comment modal
+            const commentModal = document.createElement('div');
+            commentModal.className = 'modal fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center backdrop-blur-sm';
+            commentModal.id = 'commentModal';
+            
+            commentModal.innerHTML = `
+                <div class="tech-card rounded-2xl p-8 max-w-2xl w-full mx-4 border border-white border-opacity-20 max-h-[90vh] overflow-y-auto">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                            <i class="fas fa-comments text-accent2"></i>
+                            التعليقات
+                        </h3>
+                        <button onclick="closeCommentModal()" class="text-gray-300 hover:text-white text-xl transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- News Preview -->
+                    <div class="bg-white bg-opacity-10 rounded-xl p-4 mb-6 border border-white border-opacity-20">
+                        <h4 class="text-white font-bold text-sm mb-2">${newsItem.title}</h4>
+                        <p class="text-gray-300 text-xs leading-relaxed">${newsItem.description.substring(0, 150)}...</p>
+                    </div>
+                    
+                    <!-- Add Comment Form -->
+                    <div class="mb-6">
+                        <form onsubmit="submitComment(event, '${newsId}')" class="space-y-4">
+                            <div>
+                                <textarea id="commentText" rows="3" required placeholder="اكتب تعليقك هنا..." class="w-full px-4 py-3 bg-white bg-opacity-10 border border-white border-opacity-20 rounded-xl focus:ring-2 focus:ring-accent2 focus:border-transparent text-white placeholder-gray-400 backdrop-blur-sm resize-none"></textarea>
+                            </div>
+                            <button type="submit" class="bg-accent2 hover:bg-accent1 text-white px-6 py-2 rounded-xl transition-all duration-300 font-medium">
+                                <i class="fas fa-paper-plane ml-2"></i>
+                                إضافة تعليق
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Comments List -->
+                    <div id="commentsList" class="space-y-4">
+                        <!-- Comments will be loaded here -->
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(commentModal);
+            loadComments(newsId);
+        }
+
+        function closeCommentModal() {
+            const commentModal = document.getElementById('commentModal');
+            if (commentModal) {
+                commentModal.remove();
+            }
+        }
+
+        function submitComment(event, newsId) {
+            event.preventDefault();
+            
+            const commentText = document.getElementById('commentText').value.trim();
+            if (!commentText) return;
+            
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            const comment = {
+                id: 'COMMENT_' + Date.now(),
+                newsId: newsId,
+                text: commentText,
+                author: userData.fullName || userData.username,
+                authorEmail: userData.email,
+                timestamp: new Date().toISOString(),
+                timestampFormatted: new Date().toLocaleDateString('ar-SA', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                })
+            };
+            
+            // Save comment
+            const existingComments = JSON.parse(localStorage.getItem('newsComments') || '[]');
+            existingComments.push(comment);
+            localStorage.setItem('newsComments', JSON.stringify(existingComments));
+            
+            // Clear form and reload comments
+            document.getElementById('commentText').value = '';
+            loadComments(newsId);
+            
+            // Show success notification
+            showCommentNotification('تم إضافة تعليقك بنجاح! 💬');
+        }
+
+        function loadComments(newsId) {
+            const commentsList = document.getElementById('commentsList');
+            const allComments = JSON.parse(localStorage.getItem('newsComments') || '[]');
+            const newsComments = allComments.filter(comment => comment.newsId === newsId);
+            
+            if (newsComments.length === 0) {
+                commentsList.innerHTML = `
+                    <div class="text-center text-gray-400 py-8">
+                        <i class="fas fa-comment-slash text-3xl mb-3"></i>
+                        <p class="text-sm">لا توجد تعليقات بعد</p>
+                        <p class="text-xs opacity-70">كن أول من يعلق على هذا الخبر!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort comments by timestamp (newest first)
+            newsComments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            commentsList.innerHTML = newsComments.map(comment => `
+                <div class="bg-white bg-opacity-5 rounded-xl p-4 border border-white border-opacity-10">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 bg-gradient-to-br from-accent2 to-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
+                            ${comment.author.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-white font-medium text-sm">${comment.author}</span>
+                                <span class="text-gray-400 text-xs">•</span>
+                                <span class="text-gray-400 text-xs">${comment.timestampFormatted}</span>
+                            </div>
+                            <p class="text-gray-300 text-sm leading-relaxed">${comment.text}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function showCommentNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-blue-600 text-white px-6 py-3 rounded-xl shadow-2xl transition-all duration-300';
+            notification.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-comment-dots"></i>
+                    <span class="text-sm font-medium">${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.style.opacity = '0';
+                    notification.style.transform = 'translate(-50%, -20px)';
+                    setTimeout(() => {
+                        notification.parentNode.removeChild(notification);
+                    }, 300);
+                }
+            }, 3000);
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            startSlideShow();
+            startPresidentsSlideShow();
+            
+            // Add click events to president indicators
+            document.querySelectorAll('.president-indicator').forEach((indicator, index) => {
+                indicator.addEventListener('click', () => goToPresident(index));
+            });
+            
+            // Check if user is already logged in
+            checkLoginStatus();
+        });
+
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn');
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            const profileImage = localStorage.getItem('profileImage');
+            
+            if (isLoggedIn === 'true' && userData.username) {
+                // Check if profile is complete
+                if (userData.profileComplete) {
+                    showProfileSection(userData);
+                    
+                    // Restore profile image if exists
+                    if (profileImage) {
+                        const profileImages = [
+                            document.getElementById('profileImage'),
+                            document.getElementById('profileImageLarge'),
+                            document.getElementById('editProfileImage')
+                        ];
+                        
+                        profileImages.forEach(img => {
+                            if (img) {
+                                img.innerHTML = `<img src="${profileImage}" alt="صورة الملف الشخصي" class="w-full h-full object-cover rounded-full">`;
+                            }
+                        });
+                    }
+                } else {
+                    // Profile not complete, show user info form
+                    openUserInfoModal(userData.email);
+                }
+            }
+        }
+
+        function handleContactForm(event) {
+            event.preventDefault();
+            
+            // Collect form data
+            const contactData = {
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                subject: document.getElementById('contactSubject').value,
+                message: document.getElementById('contactMessage').value,
+                timestamp: new Date().toISOString(),
+                messageId: 'MSG_' + Date.now()
+            };
+            
+            // Store message in localStorage (in real app, this would be sent to server)
+            const existingMessages = JSON.parse(localStorage.getItem('contactMessages') || '[]');
+            existingMessages.push(contactData);
+            localStorage.setItem('contactMessages', JSON.stringify(existingMessages));
+            
+            // Show success message
+            alert(`✅ تم إرسال رسالتك بنجاح!
+
+🙏 شكراً لك ${contactData.name} على تواصلك معنا
+
+📧 رقم الرسالة: ${contactData.messageId}
+
+💬 تم استلام رسالتك بعنوان: "${contactData.subject || 'رسالة عامة'}"
+
+⏰ سنتواصل معك عن قريب على البريد الإلكتروني: ${contactData.email}
+
+🎯 نقدر اهتمامك ونتطلع للتواصل معك!
+
+❤️ مع أطيب التحيات،
+فريق نادي مواهب الإعلام والثقافة - TMCC`);
+            
+            // Reset form
+            document.querySelector('#contact form').reset();
+        }
+
+        // Close modals when clicking outside
+        window.addEventListener('click', function(e) {
+            const loginModal = document.getElementById('loginModal');
+            const profileEditorModal = document.getElementById('profileEditorModal');
+            const joinFormModal = document.getElementById('joinFormModal');
+            const profileMenu = document.getElementById('profileMenu');
+            const profileSection = document.getElementById('profileSection');
+            
+            if (e.target === loginModal) {
+                closeLoginModal();
+            }
+            
+            if (e.target === profileEditorModal) {
+                closeProfileEditor();
+            }
+            
+            if (e.target === joinFormModal) {
+                closeJoinForm();
+            }
+            
+            const userInfoModal = document.getElementById('userInfoModal');
+            if (e.target === userInfoModal) {
+                closeUserInfoModal();
+            }
+            
+            const successCardModal = document.getElementById('successCardModal');
+            if (e.target === successCardModal) {
+                closeSuccessCard();
+            }
+            
+            const newsModal = document.getElementById('newsModal');
+            if (e.target === newsModal) {
+                closeNewsModal();
+            }
+            
+            const passwordModal = document.getElementById('passwordModal');
+            if (e.target === passwordModal) {
+                closePasswordModal();
+            }
+            
+            const addNewsModal = document.getElementById('addNewsModal');
+            if (e.target === addNewsModal) {
+                closeAddNewsModal();
+            }
+            
+            // Close profile menu when clicking outside
+            if (!profileSection.contains(e.target) && !profileMenu.classList.contains('hidden')) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96998cddd2a72820',t:'MTc1NDI2MzI3NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
